@@ -6,7 +6,6 @@ const token = require('./token.json').token;
 
 const bot = new TelegramBot(token, {polling: true});
 
-let chatId;
 const kbdMessage = {};
 const inkStory = {};
 
@@ -37,7 +36,7 @@ function getScene(chatId) {
 }
 
 bot.on('message', (msg) => {
-  chatId = msg.chat.id;
+  const chatId = msg.chat.id;
   if (msg.text === '/start') {
     inkStory[chatId] = new inkjs.Story(json);
     getScene(chatId);
@@ -47,7 +46,7 @@ bot.on('message', (msg) => {
 });
 
 bot.on('callback_query', (res) => {
-  chatId = res.message.chat.id;
+  const chatId = res.message.chat.id;
   if (kbdMessage[chatId]) {
     bot.deleteMessage(chatId, kbdMessage[chatId]).then(() => kbdMessage[chatId] = null);
   }
