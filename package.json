@@ -1,0 +1,15 @@
+{
+  "name": "ink-telegram",
+  "version": "0.0.1",
+  "description": "Telegram bot for ink",
+  "main": "app/ink-telegram.js",
+  "scripts": {
+    "start": "node app/ink-telegram.js"
+  },
+  "author": "Serhii Mozhaiskyi (sergei.mozhaisky@gmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "inkjs": "1.10.2",
+    "node-telegram-bot-api": "0.30.0"
+  }
+}
