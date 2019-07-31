@@ -8,10 +8,10 @@ const bot = new TelegramBot(token, {polling: true});
 
 let chatId;
 const kbdMessage = {};
+const inkStory = {};
 
 const gameFile = path.resolve(__dirname, 'game.ink.json');
 const json = fs.readFileSync(gameFile, 'UTF-8').replace(/^\uFEFF/, '');
-const inkStory = new inkjs.Story(json);
 
 function sendMessageWithKbd (chatId, text, inline_keyboard) {
   bot.sendMessage(chatId, text, { parse_mode: 'Markdown' })
@@ -19,14 +19,14 @@ function sendMessageWithKbd (chatId, text, inline_keyboard) {
   .then((msg) => { kbdMessage[chatId] = msg.message_id; });
 }
 
-function getScene() {
+function getScene(chatId) {
   let text = '';
   let choices = [];
-  while (inkStory.canContinue) {
-    inkStory.Continue();
-    text += inkStory.currentText;
+  while (inkStory[chatId].canContinue) {
+    inkStory[chatId].Continue();
+    text += inkStory[chatId].currentText;
   }
-  inkStory.currentChoices.forEach((choice, id) => {
+  inkStory[chatId].currentChoices.forEach((choice, id) => {
     choices.push([{text:choice.text, callback_data:id}]);
   });
   if (!choices.length) {
@@ -39,7 +39,8 @@ function getScene() {
 bot.on('message', (msg) => {
   chatId = msg.chat.id;
   if (msg.text === '/start') {
-    getScene();
+    inkStory[chatId] = new inkjs.Story(json);
+    getScene(chatId);
   } else {
     bot.sendMessage(chatId, 'Say "/start" to start game.');
   }
@@ -50,8 +51,8 @@ bot.on('callback_query', (res) => {
   if (kbdMessage[chatId]) {
     bot.deleteMessage(chatId, kbdMessage[chatId]).then(() => kbdMessage[chatId] = null);
   }
-  inkStory.ChooseChoiceIndex(res.data);
-  getScene();
+  inkStory[chatId].ChooseChoiceIndex(res.data);
+  getScene(chatId);
 });
 
 bot.on("polling_error", (err) => console.error(err));
