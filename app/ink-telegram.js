@@ -15,13 +15,21 @@ const inkStory = {};
 const gameFile = path.resolve(__dirname, 'game.ink.json');
 const json = fs.readFileSync(gameFile, 'UTF-8').replace(/^\uFEFF/, '');
 
+function endGame(chatId) {
+  bot.sendMessage(chatId, endgameMessage)
+  .then(() => {
+    delete kbdMessage[chatId];
+    delete inkStory[chatId];  
+  });
+}
+
 function sendMessageWithKbd (chatId, text, inline_keyboard) {
   // send message with scene text
   bot.sendMessage(chatId, text, { parse_mode: 'Markdown' })
   .then(() => {
     if (!inline_keyboard.length) {
       // game ended
-      bot.sendMessage(chatId, endgameMessage);
+      endGame(chatId);
     } else {
       // provide choices
       bot.sendMessage(chatId, choiceMessage, { parse_mode: 'Markdown', one_time_keyboard: true, reply_markup: { inline_keyboard }})
