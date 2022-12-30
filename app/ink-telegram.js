@@ -54,6 +54,13 @@ function getScene(chatId) {
   sendMessageWithKbd(chatId, text || '.', choices);
 }
 
+function continueStory(chatId, choice) {
+  if (inkStory[chatId]) {
+    inkStory[chatId].ChooseChoiceIndex(choice);
+  }
+  getScene(chatId);
+}
+
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   if (msg.text === '/start') {
@@ -67,12 +74,14 @@ bot.on('message', (msg) => {
 bot.on('callback_query', (res) => {
   const chatId = res.message.chat.id;
   if (kbdMessage[chatId]) {
-    bot.deleteMessage(chatId, kbdMessage[chatId]).then(() => kbdMessage[chatId] = null);
+    bot.deleteMessage(chatId, kbdMessage[chatId])
+    .then(() => {
+      kbdMessage[chatId] = null;
+      continueStory(chatId, res.data);
+    });
+  } else {
+    continueStory(chatId, res.data);
   }
-  if (inkStory[chatId]) {
-    inkStory[chatId].ChooseChoiceIndex(res.data);
-  }
-  getScene(chatId);
 });
 
 bot.on("polling_error", (err) => console.error(err));
