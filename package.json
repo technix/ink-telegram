@@ -9,7 +9,7 @@
   "author": "Serhii Mozhaiskyi (sergei.mozhaisky@gmail.com)",
   "license": "MIT",
   "dependencies": {
-    "inkjs": "1.10.2",
+    "inkjs": "2.2.0",
     "node-telegram-bot-api": "0.30.0"
   }
 }
