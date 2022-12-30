@@ -21,7 +21,10 @@ function sendMessageWithKbd (chatId, text, inline_keyboard) {
 function getScene(chatId) {
   let text = '';
   let choices = [];
-  while (inkStory[chatId].canContinue) {
+  if (!inkStory[chatId]) {
+    return;
+  }
+  while(inkStory[chatId].canContinue) {
     inkStory[chatId].Continue();
     text += inkStory[chatId].currentText;
   }
@@ -29,7 +32,7 @@ function getScene(chatId) {
     choices.push([{text:choice.text, callback_data:id}]);
   });
   if (!choices.length) {
-    bot.sendMessage(chatId, '--- THE END ---');
+    bot.sendMessage(chatId, text + "\n\n--- THE END ---");
     return;
   }
   sendMessageWithKbd(chatId, text || '.', choices);
@@ -50,7 +53,9 @@ bot.on('callback_query', (res) => {
   if (kbdMessage[chatId]) {
     bot.deleteMessage(chatId, kbdMessage[chatId]).then(() => kbdMessage[chatId] = null);
   }
-  inkStory[chatId].ChooseChoiceIndex(res.data);
+  if (inkStory[chatId]) {
+    inkStory[chatId].ChooseChoiceIndex(res.data);
+  }
   getScene(chatId);
 });
 
