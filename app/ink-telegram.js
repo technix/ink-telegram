@@ -49,7 +49,7 @@ function getScene(chatId) {
     text += inkStory[chatId].currentText;
   }
   inkStory[chatId].currentChoices.forEach((choice, id) => {
-    choices.push([{text:choice.text, callback_data:id}]);
+    choices.push([{text:`  ${choice.text}  `, callback_data:id}]);
   });
   sendMessageWithKbd(chatId, text || '.', choices);
 }
